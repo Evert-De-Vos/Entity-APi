@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{95E71F97-3A9D-4658-A683-73BF01852A7B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EntityApi</RootNamespace>
+    <AssemblyName>EntityApi</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="project.json" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Private\ApiCallConfiguration.cs" />
+    <Compile Include="Private\ApiService.cs" />
+    <Compile Include="Private\Utitlities\ApiSetDiscoveryService.cs" />
+    <Compile Include="Private\Utitlities\ChangeStatus.cs" />
+    <Compile Include="Private\Utitlities\ChangeTracker.cs" />
+    <Compile Include="Private\Utitlities\EntityTracker.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\ApiCall.cs" />
+    <Compile Include="Public\ApiContext.cs" />
+    <Compile Include="Public\ApiSet.cs" />
+    <Compile Include="Public\BaseApiSet.cs" />
+    <Compile Include="Public\EventArgs\ApiFailArgs.cs" />
+    <Compile Include="Public\EventArgs\ApiResponseArgs.cs" />
+    <Compile Include="Public\EventArgs\ApiSuccesArgs.cs" />
+    <Compile Include="Public\Identity\AuthenticationResult.cs" />
+    <Compile Include="Public\Identity\IdentityProvider.cs" />
+    <Compile Include="Public\Identity\ILocalyPersistIdentity.cs" />
+    <Compile Include="Public\Identity\OAuth2Identity.cs" />
+    <Compile Include="Public\TrackedApiSet.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+</Project>
