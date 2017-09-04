@@ -6,12 +6,12 @@ using EntityApi.Public.Identity;
 
 namespace EntityApi.Private.Utitlities
 {
-    internal class ApiSetDiscoveryService
+    internal class ApiSetDiscoveryService<TType>
     {
         //reference to the context that needs initialization
-        private readonly ApiContext _context;
+        private readonly ApiContext<TType> _context;
 
-        public ApiSetDiscoveryService(ApiContext context)
+        public ApiSetDiscoveryService(ApiContext<TType> context)
         {
             _context = context;
             InitializeApiSets();
@@ -58,6 +58,7 @@ namespace EntityApi.Private.Utitlities
                 _context.GetType().GetRuntimeProperty(set.Name).SetValue(_context, instance, null);
 
             }
+
         }
     }
 }

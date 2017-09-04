@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using EntityApi.Public;
+using EntityApi.Public.Enums;
 using EntityApi.Public.Identity;
+using Newtonsoft.Json;
 
 namespace EntityApi.Private
 {
@@ -15,8 +19,9 @@ namespace EntityApi.Private
 
         internal Dictionary<string, string> RequestHeaders;
         internal Dictionary<string, string> UrlParameters;
+        internal Dictionary<string, string> ContentHeaders;
 
-        internal object Body { get; set; }
+        internal HttpContent Body { get; private set; }
 
         private string _host;
         internal string Host
@@ -36,21 +41,40 @@ namespace EntityApi.Private
         internal string Url => BuildUrl();
 
         internal int AuthenticationLevel { get; set; }
-        
+
         internal HttpMethod RequestMethod;
 
         internal IdentityProvider Identity { get; set; }
 
         internal bool HasIdentity => Identity != null;
         internal bool HasBody => Body != null;
-        
+
         internal ApiCallConfiguration()
         {
             RequestHeaders = new Dictionary<string, string>();
             UrlParameters = new Dictionary<string, string>();
+            ContentHeaders = new Dictionary<string, string>();
             AuthenticationLevel = 0;
         }
-        
+
+        public void AddBody(object content, ContentEncoding encoding = ContentEncoding.AppJson)
+        {
+            switch (encoding)
+            {
+                case ContentEncoding.AppFormUrlEncoded:
+                    if (content.GetType() != typeof(string))
+                        throw new ArgumentException("formurlencoded content must be a string");
+                    Body = new StringContent((string)content);
+                    Body.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                    break;
+                case ContentEncoding.AppJson:
+                default:
+                    Body = new StringContent(JsonConvert.SerializeObject(content));
+                    Body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    break;
+            }
+        }
+
         /// <summary>
         ///     Add parameters to URL
         /// </summary>
@@ -72,7 +96,12 @@ namespace EntityApi.Private
         {
             RequestHeaders.Add(key, value);
         }
-        
+
+        internal void AddContentHeader(string key, string value)
+        {
+            ContentHeaders.Add(key, value);
+        }
+
         /// <summary>
         ///     create apicall for this request
         /// </summary>
@@ -137,6 +166,6 @@ namespace EntityApi.Private
             stringBuilder.Insert(0, Host + "/");
 
             return stringBuilder.ToString();
-        }     
+        }
     }
 }

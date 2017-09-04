@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using EntityApi.Private;
+using EntityApi.Public.Enums;
 using EntityApi.Public.Identity;
 
 namespace EntityApi.Public
@@ -62,6 +63,11 @@ namespace EntityApi.Public
             CurrentConfiguration.AddHeader(key, value);
         }
 
+        protected void ContentHeader(string key, string value)
+        {
+            CurrentConfiguration.AddContentHeader(key, value);
+        }
+
         /// <summary>
         ///     adds a parameter to the route url
         /// </summary>
@@ -76,9 +82,9 @@ namespace EntityApi.Public
         ///     adds the object to the request body
         /// </summary>
         /// <param name="content"></param>
-        protected void Body(object content)
+        protected void Body(object content, ContentEncoding encoding = ContentEncoding.AppJson)
         {
-            _currentConfiguration.Body = content;
+            _currentConfiguration.AddBody(content,encoding);
         }
 
         /// <summary>

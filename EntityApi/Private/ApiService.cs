@@ -31,28 +31,50 @@ namespace EntityApi.Private
 
         public void SendRequest(ApiCall call, bool prioritize = false)
         {
-            SendRequest(call, (statusCode, reasonPhrase, content) =>
+            SendRequest(call,  prioritize: prioritize,
+                onSuccess: (statusCode, reasonPhrase, content) =>
             {
-                var succesArgs = new ApiSuccesArgs((int)statusCode, reasonPhrase);
+                var args = new ApiResponseArgs((int)statusCode, reasonPhrase);
 
-                call.NotifySuccess(succesArgs);
-            }, prioritize);
+                call.NotifySuccess(args);
+            },
+            onFail: (statusCode, reasonPhrase, content) =>
+            {
+                var args = new ApiResponseArgs((int)statusCode, reasonPhrase);
+
+                call.NotifyFailure(args);
+            });
         }
 
         public void SendRequest<T>(ApiCall<T> call, bool prioritize = false)
         {
-            SendRequest(call, (statusCode, reasonPhrase, content) =>
-            {
-                var succesArgs = new ApiSuccesArgs<T>((int)statusCode, reasonPhrase)
+            SendRequest(call, prioritize: prioritize,
+                onSuccess: (statusCode, reasonPhrase, content) =>
                 {
-                    Content = JsonConvert.DeserializeObject<T>(content)
-                };
-
-                call.NotifySuccess(succesArgs);
-            }, prioritize);
+                    var args = new ApiResponseArgs<T>((int)statusCode, reasonPhrase);
+                    args.Content = JsonConvert.DeserializeObject<T>(content);
+                    call.NotifySuccess(args);
+                },
+                onFail: (statusCode, reasonPhrase, content) =>
+                {
+                    var args = new ApiResponseArgs<T>((int)statusCode, reasonPhrase);
+                    if (content != null)
+                    {
+                        try
+                        {
+                            args.Content = JsonConvert.DeserializeObject<T>(content);
+                        }
+                        catch (Exception e)
+                        {
+                            
+                        }
+                    }
+                        
+                    call.NotifyFailure(args);
+                });
         }
 
-        private void SendRequest(ApiCall call, Action<int, string, string> onResponse, bool prioritize = false)
+        private void SendRequest(ApiCall call, Action<int, string, string> onSuccess, Action<int, string, string> onFail, bool prioritize = false)
         {
             var config = call.Configuration;
 
@@ -67,7 +89,7 @@ namespace EntityApi.Private
                     {
                         Task.Run(() =>
                         {
-                            call.NotifyFailure(new ApiFailArgs(401, "Unauthorized")); //!!! hardcode
+                            call.NotifyFailure(new ApiResponseArgs(401, "Unauthorized")); //!!! hardcode
                         });
 
                         NextCall();
@@ -79,29 +101,26 @@ namespace EntityApi.Private
                 foreach (var kv in config.RequestHeaders)
                 {
                     request.Headers.Add(kv.Key, kv.Value);
+
                 }
 
                 if (config.HasBody)
                 {
-                    request.Content = new StringContent(JsonConvert.SerializeObject(config.Body));
+                    request.Content = config.Body;
                 }
 
                 try
                 {
                     var response = await _client.SendAsync(request);
-                    
+                    var content = await response.Content.ReadAsStringAsync();
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        Task.Run(() => { onResponse((int)response.StatusCode, response.ReasonPhrase, content); });
+                        Task.Run(() => { onSuccess((int)response.StatusCode, response.ReasonPhrase, content); });
                     }
                     else
                     {
-                        Task.Run(() =>
-                            {
-                                call.NotifyFailure(new ApiFailArgs((int)response.StatusCode, response.ReasonPhrase));
-                            });
+                        Task.Run(() => { onFail((int)response.StatusCode, response.ReasonPhrase, content); });
                     }
 
                 }
@@ -109,7 +128,7 @@ namespace EntityApi.Private
                 {
                     Task.Run(() =>
                     {
-                        call.NotifyFailure(new ApiFailArgs(400, ex.Message));
+                        call.NotifyFailure(new ApiResponseArgs(400, ex.Message));
                     });
                 }
                 finally

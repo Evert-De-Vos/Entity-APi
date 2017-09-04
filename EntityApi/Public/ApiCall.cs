@@ -13,18 +13,21 @@ namespace EntityApi.Public
         protected Action FinalAction;
         protected Action BeforeAction;
 
-        protected ApiCall() { }
+        protected ApiCall()
+        {
+            SuccessActions = new List<Action<ApiResponseArgs>>();
+            FailActions = new List<Action<ApiResponseArgs>>();
+        }
 
-        internal ApiCall(ApiCallConfiguration configuration)
+        internal ApiCall(ApiCallConfiguration configuration) : this()
         {
             Configuration = configuration;
-            SuccessActions = new List<Action<ApiSuccesArgs>>();
-            FailActions = new List<Action<ApiFailArgs>>();
+            
         }
 
 
-        public List<Action<ApiSuccesArgs>> SuccessActions;
-        public void NotifySuccess(ApiSuccesArgs args)
+        public List<Action<ApiResponseArgs>> SuccessActions;
+        public void NotifySuccess(ApiResponseArgs args)
         {
             foreach (var action in SuccessActions)
             {
@@ -33,8 +36,8 @@ namespace EntityApi.Public
             FinalAction?.Invoke();
         }
 
-        public List<Action<ApiFailArgs>> FailActions;
-        public void NotifyFailure(ApiFailArgs args)
+        public List<Action<ApiResponseArgs>> FailActions;
+        public void NotifyFailure(ApiResponseArgs args)
         {
             foreach (var action in FailActions)
             {
@@ -43,13 +46,13 @@ namespace EntityApi.Public
             FinalAction?.Invoke();
         }
 
-        public ApiCall OnSuccess(Action<ApiSuccesArgs> onSuccesAction)
+        public ApiCall OnSuccess(Action<ApiResponseArgs> onSuccesAction)
         {
             SuccessActions.Add(onSuccesAction);
             return this;
         }
 
-        public ApiCall OnFail(Action<ApiFailArgs> onFailAction)
+        public ApiCall OnFail(Action<ApiResponseArgs> onFailAction)
         {
             FailActions.Add(onFailAction);
             return this;
@@ -82,13 +85,14 @@ namespace EntityApi.Public
 
     public class ApiCall<T> : ApiCall
     {
-        internal ApiCall( ApiCallConfiguration configuration) 
+        internal ApiCall( ApiCallConfiguration configuration) : base()
         {
             Configuration = configuration;
+            SuccessActions = new List<Action<ApiResponseArgs<T>>>();
         }
 
-        public new List<Action<ApiSuccesArgs<T>>> SuccessActions;
-        public virtual void NotifySuccess(ApiSuccesArgs<T> args)
+        public List<Action<ApiResponseArgs<T>>> SuccessActions;
+        public virtual void NotifySuccess(ApiResponseArgs<T> args)
         {
             foreach (var action in SuccessActions)
             {
@@ -97,13 +101,13 @@ namespace EntityApi.Public
             FinalAction?.Invoke();
         }
 
-        public virtual ApiCall<T> OnSuccess(Action<ApiSuccesArgs<T>> onSuccesAction)
+        public virtual ApiCall<T> OnSuccess(Action<ApiResponseArgs<T>> onSuccesAction)
         {
-           SuccessActions.Add(onSuccesAction);
+            SuccessActions.Add(onSuccesAction);
             return this;
         }
 
-        public new virtual ApiCall<T> OnFail(Action<ApiFailArgs> onFailAction)
+        public new virtual ApiCall<T> OnFail(Action<ApiResponseArgs> onFailAction)
         {
             FailActions.Add(onFailAction);
             return this;

@@ -24,4 +24,13 @@ namespace EntityApi.Public.EventArgs
             Info = info;
         }
     }
+    public class ApiResponseArgs<T> : ApiResponseArgs
+    {
+        public T Content { get; internal set; }
+        public bool HasContent => Content != null;
+
+        public ApiResponseArgs(int statusCode, string info) : base(statusCode, info)
+        {
+        }
+    }
 }

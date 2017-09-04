@@ -15,6 +15,10 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +53,8 @@
     <Compile Include="Public\ApiContext.cs" />
     <Compile Include="Public\ApiSet.cs" />
     <Compile Include="Public\BaseApiSet.cs" />
-    <Compile Include="Public\EventArgs\ApiFailArgs.cs" />
+    <Compile Include="Public\Enums\ContentEncoding.cs" />
     <Compile Include="Public\EventArgs\ApiResponseArgs.cs" />
-    <Compile Include="Public\EventArgs\ApiSuccesArgs.cs" />
     <Compile Include="Public\Identity\AuthenticationResult.cs" />
     <Compile Include="Public\Identity\IdentityProvider.cs" />
     <Compile Include="Public\Identity\ILocalyPersistIdentity.cs" />

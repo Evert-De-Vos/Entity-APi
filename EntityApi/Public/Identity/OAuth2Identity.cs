@@ -4,12 +4,11 @@ using System.Threading.Tasks;
 
 namespace EntityApi.Public.Identity
 {
-    public abstract class OAuth2Identity : IdentityProvider
+    public abstract class OAuth2Identity<TType> : IdentityProvider<TType>
     {
         protected string AuthenticationToken;
         protected DateTime AuthenticationExpirationDate;
         protected TimeSpan AuthenticationBuffer;
-
 
         protected int _authenticationLevel;
 
@@ -121,6 +120,11 @@ namespace EntityApi.Public.Identity
 
             if (forceRefresh || AuthenticationExpirationDate - AuthenticationBuffer < DateTime.Now || RefreshExpirationDate - RefreshBuffer < DateTime.Now)
                 await RefreshAuthenticationTokens();
+        }
+
+        public override void LogOut()
+        {
+            throw new NotImplementedException();
         }
     }
 }

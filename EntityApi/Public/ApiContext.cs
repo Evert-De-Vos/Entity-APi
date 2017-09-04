@@ -4,7 +4,7 @@ using EntityApi.Public.Identity;
 
 namespace EntityApi.Public
 {
-    public abstract class ApiContext
+    public abstract class ApiContext<TType>
     {
         internal readonly bool IsInstantiated;
 
@@ -20,8 +20,8 @@ namespace EntityApi.Public
             }
         }
 
-        private IdentityProvider _identity;
-        public IdentityProvider IdentityProvider
+        private IdentityProvider<TType> _identity;
+        public IdentityProvider<TType> IdentityProvider
         {
             get => _identity;
             protected set
@@ -36,7 +36,7 @@ namespace EntityApi.Public
         {
             InitContext();
             IsInstantiated = true;
-            new ApiSetDiscoveryService(this);
+            new ApiSetDiscoveryService<TType>(this);
         }
 
         protected virtual void InitContext()
